@@ -35,7 +35,7 @@ export const STARTUP_VIEWS_QUERY = defineQuery(`
   *[_type == "startup" && _id == $id][0]{
     _id,views
   }
-  `);
+`);
 
 export const AUTHOR_BY_GITHUB_ID_QUERY = defineQuery(`
 *[_type == "author" && id == $id][0]{
@@ -45,7 +45,20 @@ export const AUTHOR_BY_GITHUB_ID_QUERY = defineQuery(`
     username,
     email,
     image,
-    bio
+    bio,
+    linkedinVerified
+}
+`);
+
+export const AUTHOR_BY_LINKEDIN_ID_QUERY = defineQuery(`
+*[_type == "author" && linkedinId == $linkedinId][0]{
+    _id,
+    linkedinId,
+    name,
+    email,
+    image,
+    linkedinVerified,
+    linkedinProfile
 }
 `);
 
@@ -57,10 +70,11 @@ export const AUTHOR_BY_ID_QUERY = defineQuery(`
     username,
     email,
     image,
-    bio
+    bio,
+    linkedinVerified,
+    linkedinProfile
 }
 `);
-
 
 export const STARTUPS_BY_AUTHOR_QUERY =
   defineQuery(`*[_type == "startup" && author._ref == $id] | order(_createdAt desc) {

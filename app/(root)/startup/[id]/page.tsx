@@ -1,33 +1,38 @@
 import { Suspense } from "react";
 import { client } from "@/sanity/lib/client";
 import {
-  PLAYLIST_BY_SLUG_QUERY,
   STARTUP_BY_ID_QUERY,
+  PLAYLIST_BY_SLUG_QUERY,
 } from "@/sanity/lib/queries";
 import { notFound } from "next/navigation";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 import Image from "next/image";
-
+import { auth } from "@/auth";
 import markdownit from "markdown-it";
 import { Skeleton } from "@/components/ui/skeleton";
 import View from "@/components/View";
 import StartupCard, { StartupTypeCard } from "@/components/StartupCard";
+import ConnectWithAuthor from "@/components/ConnectWithAuthor";
 
 const md = markdownit();
 
 export const experimental_ppr = true;
 
-const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
+const StartupPage = async ({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: { success?: string; error?: string };
+}) => {
   const id = (await params).id;
-
+  const session = await auth();
+  console.log(session);
   const [post, { select: editorPosts }] = await Promise.all([
     client.fetch(STARTUP_BY_ID_QUERY, { id }),
-    client.fetch(PLAYLIST_BY_SLUG_QUERY, {
-      slug: "editor-picks",
-    }),
+    client.fetch(PLAYLIST_BY_SLUG_QUERY, { slug: "editor-picks" }),
   ]);
-  console.log(editorPosts)
 
   if (!post) return notFound();
 
@@ -37,17 +42,18 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     <>
       <section className="pink_container !min-h-[230px]">
         <p className="tag">{formatDate(post?._createdAt)}</p>
-
         <h1 className="heading">{post.title}</h1>
         <p className="sub-heading !max-w-5xl">{post.description}</p>
       </section>
 
       <section className="section_container">
-        <img
-          src={post.image}
-          alt="thumbnail"
-          className="w-full h-auto rounded-xl"
-        />
+        {post.image && (
+          <img
+            src={post.image}
+            alt="thumbnail"
+            className="w-full h-auto rounded-xl"
+          />
+        )}
 
         <div className="space-y-5 mt-10 max-w-4xl mx-auto">
           <div className="flex-between gap-5">
@@ -62,7 +68,6 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
                 height={64}
                 className="rounded-full drop-shadow-lg"
               />
-
               <div>
                 <p className="text-20-medium">{post.author.name}</p>
                 <p className="text-16-medium !text-black-300">
@@ -71,7 +76,14 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
               </div>
             </Link>
 
-            <p className="category-tag">{post.category}</p>
+            <div className="flex items-center gap-4">
+              <p className="category-tag">{post.category}</p>
+              <ConnectWithAuthor
+                authorId={post.author._id}
+                currentUserId={session?.id}
+                id={id}
+              />
+            </div>
           </div>
 
           <h3 className="text-30-bold">Pitch Details</h3>
@@ -87,10 +99,19 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
         <hr className="divider" />
 
+        {/* Success/Error Messages */}
+        <div className="max-w-4xl mx-auto">
+          {searchParams.success && (
+            <p className="text-green-500 mb-4">{searchParams.success}</p>
+          )}
+          {searchParams.error && (
+            <p className="text-red-500 mb-4">{searchParams.error}</p>
+          )}
+        </div>
+
         {editorPosts?.length > 0 && (
           <div className="max-w-4xl mx-auto">
             <p className="text-30-semibold">Editor Picks</p>
-
             <ul className="mt-7 card_grid-sm">
               {editorPosts.map((post: StartupTypeCard, i: number) => (
                 <StartupCard key={i} post={post} />
@@ -107,4 +128,4 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   );
 };
 
-export default Page;
+export default StartupPage;

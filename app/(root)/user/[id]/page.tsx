@@ -6,6 +6,7 @@ import Image from "next/image";
 import UserStartups from "@/components/UserStartups";
 import { Suspense } from "react";
 import { StartupCardSkeleton } from "@/components/StartupForm";
+import { Linkedin } from "lucide-react";
 
 export const experimental_ppr = true;
 
@@ -38,6 +39,13 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
             @{user?.username}
           </p>
           <p className="mt-1 text-center text-14-normal">{user?.bio}</p>
+          
+          {user.linkedinVerified && (
+            <div className="mt-4 flex items-center gap-2 text-[#0077B5]">
+              <Linkedin className="h-5 w-5" />
+              <span className="text-14-normal">LinkedIn Verified</span>
+            </div>
+          )}
         </div>
 
         <div className="flex-1 flex flex-col gap-5 lg:-mt-5">

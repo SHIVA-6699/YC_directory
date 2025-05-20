@@ -1,40 +1,55 @@
-import { defineField, defineType } from "sanity";
-import { UserIcon } from "lucide-react";
+import { defineType } from "sanity";
 
 export const author = defineType({
   name: "author",
   title: "Author",
   type: "document",
-  icon: UserIcon,
   fields: [
-    defineField({
+    {
       name: "id",
-      type: "number",
-    }),
-    defineField({
-      name: "name",
+      title: "GitHub ID",
       type: "string",
-    }),
-    defineField({
-      name: "username",
-      type: "string",
-    }),
-    defineField({
-      name: "email",
-      type: "string",
-    }),
-    defineField({
-      name: "image",
-      type: "url",
-    }),
-    defineField({
-      name: "bio",
-      type: "text",
-    }),
-  ],
-  preview: {
-    select: {
-      title: "name",
     },
-  },
+    {
+      name: "linkedinId",
+      title: "LinkedIn ID",
+      type: "string",
+    },
+    {
+      name: "name",
+      title: "Name",
+      type: "string",
+    },
+    {
+      name: "username",
+      title: "Username",
+      type: "string",
+    },
+    {
+      name: "email",
+      title: "Email",
+      type: "string",
+    },
+    {
+      name: "image",
+      title: "Image",
+      type: "string",
+    },
+    {
+      name: "bio",
+      title: "Bio",
+      type: "text",
+    },
+    {
+      name: "linkedinVerified",
+      title: "Is LinkedIn Verified",
+      type: "boolean",
+      initialValue: false,
+    },
+    {
+      name: "linkedinProfile",
+      title: "LinkedIn Profile URL",
+      type: "url",
+    },
+  ],
 });
